@@ -1,6 +1,7 @@
 // app/products/[productId]/page.tsx
 import ImageGallery from "@/app/components/product/ImageGallery";
 import ProductDetails from "@/app/components/product/ProductDetails";
+import ProductInformation from "@/app/components/product/ProductInformation";
 import { getProductById } from "@/services/Product";
 import React from "react";
 
@@ -19,6 +20,7 @@ const ProductPage = async ({ params }: PageProps) => {
   }
 
   return (
+   <>
     <div className="flex flex-col lg:flex-row gap-8 p-8">
       {/* Image Gallery */}
       <div className="lg:w-3/5">
@@ -27,9 +29,12 @@ const ProductPage = async ({ params }: PageProps) => {
 
       {/* Product Details */}
       <div className="lg:w-2/5 space-y-8">
-        <ProductDetails product={product} />
+        <ProductInformation product={product} />
       </div>
     </div>
+    <ProductDetails productId={product._id}></ProductDetails>
+   </>
+    
   );
 };
 
