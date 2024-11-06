@@ -1,10 +1,8 @@
 import clientAxiosInstance from "@/app/lib/AxiosInstance/clientAxiosInstance";
 
 // Fetch order history by user email
-export const getOrderHistory = async (email: string) => {
-  const res = await clientAxiosInstance.get(`/order/history`, {
-    params: { email },
-  });
+export const getOrderHistory = async () => {
+  const res = await clientAxiosInstance.get('/order/history');
   return res.data;
 };
 

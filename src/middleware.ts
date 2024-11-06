@@ -6,11 +6,10 @@ import { getCurrentUser } from "./services/AuthService";
 const AuthRoutes = ["/login", "/register"];
 
 export const protectedRoutes = [
-    "/posts",
-    "/posts/:page*",
     "/admin",
     "/login",
     "/register",
+    "my-order"
   ];
   
 
@@ -51,5 +50,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/posts", "/posts/:page*", "/admin-dashboard", "/login", "/register"],
+  matcher: ["/admin", "/admin/:page*",  "/login", "/register", "/my-order"],
 };

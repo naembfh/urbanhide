@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Dropdown,
   DropdownItem,
@@ -11,8 +9,6 @@ import { Avatar } from "@nextui-org/avatar";
 import { useUser } from "@/context/user.provider";
 import { logout } from "@/services/AuthService";
 import { protectedRoutes } from "@/middleware";
-
-
 
 export default function NavbarDropdown() {
   const router = useRouter();
@@ -37,19 +33,21 @@ export default function NavbarDropdown() {
       <DropdownTrigger>
         <Avatar className="cursor-pointer" src={user?.profilePhoto} />
       </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-        <DropdownItem onClick={() => handleNavigation("/profile")}>
-          Profile
-        </DropdownItem>
-        <DropdownItem onClick={() => handleNavigation("/feeds")}>
-          Feeds
-        </DropdownItem>
-      
+      <DropdownMenu aria-label="User Menu">
+        {user?.role === "ADMIN" ? (
+          <DropdownItem onClick={() => handleNavigation("/admin")}>
+            Admin Panel
+          </DropdownItem>
+        ) : (
+          <DropdownItem onClick={() => handleNavigation("/my-order")}>
+            My Order
+          </DropdownItem>
+        )}
         <DropdownItem
-          key="delete"
+          key="logout"
           className="text-danger"
           color="danger"
-          onClick={() => handleLogout()}
+          onClick={handleLogout}
         >
           Logout
         </DropdownItem>

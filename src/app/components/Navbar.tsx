@@ -31,9 +31,22 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <p className="font-bold text-inherit">VagabondVault</p>
+            <p className="font-bold text-inherit">Urbanhide</p>
           </NextLink>
         </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent className="hidden md:flex">
+      <NavbarMenuItem>
+            <Link href="/" size="lg" color="foreground">
+              Home
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link href="/products" size="lg" color="foreground">
+              Products
+            </Link>
+          </NavbarMenuItem>
       </NavbarContent>
 
       {/* Right section with Theme Switch, Cart Icon, and Login button */}
@@ -65,6 +78,26 @@ export const Navbar = () => {
 
       {/* Mobile view with Theme Switch and menu toggle */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+      <NavbarItem className="relative">
+          <Button isIconOnly variant="flat" onClick={() => router.push("/cart")} aria-label="View Cart">
+            <ShoppingCartIcon className="h-5 w-5 text-gray-800 dark:text-white" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Button>
+        </NavbarItem>
+        
+      {user?.email ? (
+          <NavbarItem className="sm:flex gap-2">
+            <NavbarDropdown />
+          </NavbarItem>
+        ) : (
+          <NavbarItem className="sm:flex gap-2">
+            <Button onClick={() => router.push("/login")}>Login</Button>
+          </NavbarItem>
+        )}
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
@@ -78,15 +111,11 @@ export const Navbar = () => {
             </Link>
           </NavbarMenuItem>
           <NavbarMenuItem>
-            <Link href="/about" size="lg" color="foreground">
-              About
+            <Link href="/products" size="lg" color="foreground">
+              Products
             </Link>
           </NavbarMenuItem>
-          <NavbarMenuItem>
-            <Link href="/contact" size="lg" color="foreground">
-              Contact
-            </Link>
-          </NavbarMenuItem>
+         
         </div>
       </NavbarMenu>
     </NextUINavbar>

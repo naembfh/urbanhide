@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/context/user.provider";
 import { toast } from "sonner";
-import { getOrderHistory } from "@/services/Order";
+import { getOrderHistory, updateOrderStatus } from "@/services/Order";
 import Image from "next/image";
 
 interface Order {
@@ -35,11 +35,6 @@ const MyOrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        if (!user?.email) {
-          toast.error("You must be logged in to view your orders.");
-          return;
-        }
-
         const data = await getOrderHistory();
         setOrders(data);
       } catch (error) {
@@ -51,7 +46,22 @@ const MyOrdersPage = () => {
     };
 
     fetchOrders();
-  }, [user]);
+  }, []);
+
+  const handleStatusChange = async (orderId: string, status: string) => {
+    try {
+      await updateOrderStatus(orderId, status);
+      toast.success("Order status updated successfully!");
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status. Please try again.");
+    }
+  };
 
   if (loading) {
     return (
@@ -78,23 +88,42 @@ const MyOrdersPage = () => {
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-lg font-semibold">Order ID: {order._id}</h2>
-                <p className="text-gray-500 text-sm">Date: {new Date(order.date).toLocaleString()}</p>
-                <p className="text-gray-600 text-sm">Name: {order.shippingDetails.name}</p>
-                <p className="text-gray-600 text-sm">Email: {order.shippingDetails.email}</p>
+                <p className="text-gray-500 text-sm">
+                  Date: {new Date(order.date).toLocaleString()}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  Name: {order.shippingDetails.name}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  Email: {order.shippingDetails.email}
+                </p>
               </div>
-              <p
-                className={`text-sm font-medium ${
-                  order.status === "Pending"
-                    ? "text-yellow-500"
-                    : order.status === "Shipped"
-                    ? "text-blue-500"
-                    : order.status === "Received"
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}
-              >
-                Status: {order.status}
-              </p>
+              {user?.role === "ADMIN" ? (
+                <select
+                  value={order.status}
+                  onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                  className="border rounded-md p-2 text-gray-700"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Received">Received</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              ) : (
+                <p
+                  className={`text-sm font-medium ${
+                    order.status === "Pending"
+                      ? "text-yellow-500"
+                      : order.status === "Shipped"
+                      ? "text-blue-500"
+                      : order.status === "Received"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  Status: {order.status}
+                </p>
+              )}
             </div>
             <div className="space-y-4">
               {order.items.map((item) => (
@@ -114,7 +143,10 @@ const MyOrdersPage = () => {
                     </p>
                   </div>
                   <p className="font-bold">
-                    ${item.price && item.quantity ? (item.price * item.quantity).toFixed(2) : "0.00"}
+                    $
+                    {item.price && item.quantity
+                      ? (item.price * item.quantity).toFixed(2)
+                      : "0.00"}
                   </p>
                 </div>
               ))}
