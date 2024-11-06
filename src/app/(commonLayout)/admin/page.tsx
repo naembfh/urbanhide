@@ -25,6 +25,11 @@ const AdminDashboard = () => {
             Order Management
           </Button>
         </Link>
+        <Link href="/admin/user-management">
+          <Button color="primary" size="lg" className="w-full sm:w-auto">
+            User Management
+          </Button>
+        </Link>
       </div>
     </div>
   );
