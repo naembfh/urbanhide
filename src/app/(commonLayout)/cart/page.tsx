@@ -1,10 +1,13 @@
 "use client";
 import React from 'react';
+import Image from 'next/image'; // Import Image component
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { updateQuantity, removeFromCart, clearCart } from '@/redux/features/cartSlice';
+import { useRouter } from 'next/navigation';
 
 const CartPage = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const subtotal = useSelector((state: RootState) => state.cart.subtotal);
@@ -41,7 +44,13 @@ const CartPage = () => {
                   <tr key={item.id} className="border-b">
                     <td className="p-4">
                       <div className="flex items-center space-x-4">
-                        <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          width={64}
+                          height={64}
+                          className="object-cover rounded-md"
+                        />
                         <span>{item.name}</span>
                       </div>
                     </td>
@@ -91,7 +100,7 @@ const CartPage = () => {
             </button>
             <button
               className="py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
-              onClick={() => alert("Proceed to Checkout")}
+              onClick={() => router.push("/checkout")} // Navigate to checkout
             >
               Proceed to Checkout
             </button>

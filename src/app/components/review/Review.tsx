@@ -36,9 +36,10 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comment.trim()) return;
+    if (!comment.trim() || !user?.id) return; // Ensure user ID is defined
+
     try {
-      await addReview({ productId, userId: user?.id, comment, rating });
+      await addReview({ productId, userId: user.id, comment, rating });
       // Refresh the reviews after adding a new review
       const { data } = await getReviewsByProductId(productId);
       setReviewsData(data);
@@ -64,7 +65,11 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
                 <div
                   className="bg-yellow-500 h-2 rounded"
                   style={{
-                    width: `${(reviewsData.filter((review) => review.rating === star).length / reviewsData.length) * 100}%`,
+                    width: `${
+                      (reviewsData.filter((review) => review.rating === star).length /
+                        reviewsData.length) *
+                      100
+                    }%`,
                   }}
                 />
               </div>
@@ -77,7 +82,7 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
       {/* Review List Section */}
       <div className="review-list space-y-4 mb-4">
         {reviewsData.map((review) => (
-          <div key={review._id} className="review-item p-3  rounded-lg shadow-sm">
+          <div key={review._id} className="review-item p-3 rounded-lg shadow-sm">
             <div className="review-header flex justify-between items-center">
               <strong>{review.username || "Anonymous"}</strong>
               <span className="review-rating text-yellow-500">{review.rating} ★</span>
@@ -130,3 +135,4 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
 };
 
 export default Review;
+
