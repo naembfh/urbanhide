@@ -1,11 +1,14 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
-import Image from 'next/image'; // Import Image component
+import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { useUser } from "@/context/user.provider";
+import { toast } from "sonner";
+import { createCheckoutSession } from "@/services/Order";
 
 // Initialize Stripe
 const stripePromise = loadStripe("pk_test_51L0YqPIFPHmtypU8Dw9vs6Mt8mOttFAvCqhuo6VEUzNXq9hUe6NQDT5NF5hCrJtg40phCRLRaMDZG4tTHJGsyUWs00QTV58MlD");
@@ -35,30 +38,37 @@ const CheckoutForm = () => {
   };
 
   const handleCheckout = async () => {
-    if (!isFormComplete) return;
+    if (!isFormComplete) {
+      toast.error("Please complete all fields!");
+      return;
+    }
+
+    // Save shipping details to local storage
+    localStorage.setItem("shippingDetails", JSON.stringify(shippingDetails));
 
     const stripe = await stripePromise;
-    if (!stripe) return;
+    if (!stripe) {
+      toast.error("Stripe initialization failed!");
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:5000/api/order/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cartItems,
-          shippingDetails,
-          email: user?.email,
-        }),
+      // Use the service to create a checkout session
+      const { id } = await createCheckoutSession({
+        cartItems,
+        shippingDetails,
+        email: user?.email || shippingDetails.email,
       });
 
-      const { id } = await response.json();
+      // Redirect to Stripe checkout
       const { error } = await stripe.redirectToCheckout({ sessionId: id });
 
       if (error) {
-        console.error("Stripe checkout error:", error);
+        toast.error(`Stripe checkout error: ${error.message}`);
       }
     } catch (error) {
       console.error("Error initiating checkout:", error);
+      toast.error("Failed to initiate checkout. Please try again.");
     }
   };
 
@@ -105,7 +115,11 @@ const CheckoutForm = () => {
 
         <button
           onClick={handleCheckout}
-          className={`w-full mt-6 py-2 px-4 rounded-md transition ${isFormComplete ? "bg-green-500 hover:bg-green-600 text-white" : "bg-red-500 text-white cursor-not-allowed"}`}
+          className={`w-full mt-6 py-2 px-4 rounded-md transition ${
+            isFormComplete
+              ? "bg-green-500 hover:bg-green-600 text-white"
+              : "bg-red-500 text-white cursor-not-allowed"
+          }`}
           disabled={!isFormComplete}
         >
           Proceed to Stripe Checkout
@@ -122,6 +136,7 @@ const CheckoutPage = () => (
 );
 
 export default CheckoutPage;
+
 
 
 // Basic Test Card
