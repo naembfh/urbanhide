@@ -39,7 +39,7 @@ export default function NavbarDropdown() {
             Admin Panel
           </DropdownItem>
         ) : (
-          <DropdownItem onClick={() => handleNavigation("/my-order")}>
+          <DropdownItem onClick={() => handleNavigation("profile/my-order")}>
             My Order
           </DropdownItem>
         )}

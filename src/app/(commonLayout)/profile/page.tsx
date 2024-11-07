@@ -5,7 +5,7 @@ const ProfilePage = async () => {
 
 
   return (
-<></>
+<>profile</>
   );
 };
 

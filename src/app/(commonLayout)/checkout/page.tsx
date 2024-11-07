@@ -14,6 +14,7 @@ import { createCheckoutSession } from "@/services/Order";
 const stripePromise = loadStripe("pk_test_51L0YqPIFPHmtypU8Dw9vs6Mt8mOttFAvCqhuo6VEUzNXq9hUe6NQDT5NF5hCrJtg40phCRLRaMDZG4tTHJGsyUWs00QTV58MlD");
 
 const CheckoutForm = () => {
+  localStorage.removeItem("isOrderCreated");
   const { user } = useUser();
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);
   const totalAmount = useSelector((state: RootState) => state.cart.totalAmount);

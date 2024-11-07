@@ -7,6 +7,7 @@ import { updateQuantity, removeFromCart, clearCart } from '@/redux/features/cart
 import { useRouter } from 'next/navigation';
 
 const CartPage = () => {
+  localStorage.removeItem("isOrderCreated");
   const router = useRouter();
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.cartItems);

@@ -2,13 +2,15 @@
 
 import React, { useState } from "react";
 import { Button, Input } from "@nextui-org/react";
-import { useUsers, useAddUser, useUpdateUser, useDeleteUser } from "@/hooks/user.hook";
+import { useUsers, useAddUser, useUpdateRoleUser, useDeleteUser, useUpdateProfile } from "@/hooks/user.hook";
 import Loading from "@/app/components/Loading";
+import AdminDashboard from "@/app/components/DashboardNavigation";
 
 const UserManagement = () => {
   const { data: users, isLoading } = useUsers();
   const addUserMutation = useAddUser();
-  const updateUserMutation = useUpdateUser();
+  const updateProfileMutation = useUpdateProfile();
+  const updateRoleMutation = useUpdateRoleUser();
   const deleteUserMutation = useDeleteUser();
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -35,8 +37,7 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = async (userId: string, role: string) => {
-    console.log(role)
-    await updateUserMutation.mutateAsync({ userId, role });
+    await updateRoleMutation.mutateAsync({ userId, role });
   };
 
   const openModal = (user?: any) => {
@@ -85,19 +86,19 @@ const UserManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const userData = new FormData();
-    userData.append("name", formData.name);
-    userData.append("email", formData.email);
-    userData.append("phone", formData.phone);
-    userData.append("address", formData.address);
-    if (formData.password) userData.append("password", formData.password);
-    if (formData.image) userData.append("image", formData.image);
+    const profileData = new FormData();
+    profileData.append("name", formData.name);
+    profileData.append("email", formData.email);
+    profileData.append("phone", formData.phone);
+    profileData.append("address", formData.address);
+    if (formData.password) profileData.append("password", formData.password);
+    if (formData.image) profileData.append("image", formData.image);
 
     if (isEditMode && editUserId) {
-      userData.append("existingImage", formData.existingImage);
-      await updateUserMutation.mutateAsync({ userId: editUserId, userData });
+      profileData.append("userId", editUserId); // Include user ID for editing
+      await updateProfileMutation.mutateAsync(profileData);
     } else {
-      await addUserMutation.mutateAsync(userData);
+      await addUserMutation.mutateAsync(profileData);
     }
     closeModal();
   };
@@ -105,6 +106,8 @@ const UserManagement = () => {
   if (isLoading) return <Loading />;
 
   return (
+    <>
+    <AdminDashboard></AdminDashboard>
     <div className="p-4 relative">
       <div className="flex justify-end mb-4">
         <Button color="success" size="sm" onClick={() => openModal()}>
@@ -189,6 +192,7 @@ const UserManagement = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

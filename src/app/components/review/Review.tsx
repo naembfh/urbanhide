@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useUser } from "@/context/user.provider"; // Ensure you have the useUser hook available
+import { useUser } from "@/context/user.provider";
 import { addReview, getReviewsByProductId } from "@/services/Review";
 
 interface ProductReviewsProps {
@@ -9,20 +9,18 @@ interface ProductReviewsProps {
 }
 
 const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
-  const { user } = useUser(); // Access user data from context
-  const [reviewsData, setReviewsData] = useState<any[]>([]); // State for fetched reviews data
-  const [loading, setLoading] = useState(true); // State to manage loading
+  const { user } = useUser();
+  const [reviewsData, setReviewsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Form states
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
 
-  // Fetch reviews on component mount
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const { data } = await getReviewsByProductId(productId); // Expecting { data: Array } format
-        setReviewsData(data); // Use the `data` field directly
+        const { data } = await getReviewsByProductId(productId);
+        setReviewsData(data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       } finally {
@@ -33,14 +31,12 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
     fetchReviews();
   }, [productId]);
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comment.trim() || !user?.id) return; // Ensure user ID is defined
+    if (!comment.trim() || !user?.id) return;
 
     try {
       await addReview({ productId, userId: user.id, comment, rating });
-      // Refresh the reviews after adding a new review
       const { data } = await getReviewsByProductId(productId);
       setReviewsData(data);
       setComment("");
@@ -54,7 +50,6 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
 
   return (
     <div className="product-reviews p-4 border border-gray-200 rounded-lg">
-      {/* Review Summary Section */}
       <div className="review-summary mb-4">
         <h2 className="text-2xl font-bold">Customer Reviews</h2>
         <div className="rating-breakdown mt-4 space-y-1">
@@ -79,7 +74,6 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
         </div>
       </div>
 
-      {/* Review List Section */}
       <div className="review-list space-y-4 mb-4">
         {reviewsData.map((review) => (
           <div key={review._id} className="review-item p-3 rounded-lg shadow-sm">
@@ -95,7 +89,6 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
         ))}
       </div>
 
-      {/* Review Form Section */}
       {user ? (
         <form className="review-form mt-4 p-4 border border-gray-200 rounded-lg" onSubmit={handleSubmit}>
           <h3 className="text-lg font-semibold">Write a Review</h3>
@@ -128,11 +121,20 @@ const Review: React.FC<ProductReviewsProps> = ({ productId }) => {
           </button>
         </form>
       ) : (
-        <p className="mt-4 text-blue-500">Please log in to write a review.</p>
+        <button
+  onClick={() =>
+    (window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`)
+  }
+  className="mt-4 text-blue-500 hover:underline focus:outline-none focus:ring focus:ring-blue-300"
+>
+  Please log in to write a review.
+</button>
+
       )}
     </div>
   );
 };
 
 export default Review;
+
 

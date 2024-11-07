@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Button, Modal, Input } from "@nextui-org/react";
 import { useAddCategory, useCategories, useDeleteCategory, useUpdateCategory } from "@/hooks/category.hook";
+import AdminDashboard from "@/app/components/DashboardNavigation";
 
 
 const CategoryList = () => {
@@ -51,6 +52,8 @@ const CategoryList = () => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
+    <>
+    <AdminDashboard></AdminDashboard>
     <div className="p-4 relative">
       <div className="flex justify-end mb-4">
         <Button color="success" size="sm" onClick={() => openModal()}>
@@ -132,6 +135,7 @@ const CategoryList = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

@@ -40,7 +40,7 @@ const SuccessPage = () => {
 
         // Redirect to the appropriate page after order creation
         setTimeout(() => {
-          router.push("/my-order" );
+          router.push("/my-order");
         }, 3000);
       } catch (error) {
         console.error("Error creating order:", error);
@@ -53,14 +53,22 @@ const SuccessPage = () => {
   useEffect(() => {
     // Retrieve shipping details from local storage
     const storedShippingDetails = localStorage.getItem("shippingDetails");
+    const isOrderCreated = localStorage.getItem("isOrderCreated");
 
-    if (storedShippingDetails) {
+    if (storedShippingDetails && !isOrderCreated) {
       const parsedDetails = JSON.parse(storedShippingDetails);
       setShippingDetails(parsedDetails);
+
+      // Create the order
       handleCreateOrder(parsedDetails, cartItems, totalAmount);
+
+      // Set flag to prevent duplicate order creation
+      localStorage.setItem("isOrderCreated", "true");
     } else {
-      // Redirect to home if shipping details are missing
-      router.push("/");
+      if (!storedShippingDetails) {
+        // Redirect to home if shipping details are missing
+        router.push("/");
+      }
     }
   }, [cartItems, totalAmount, router, handleCreateOrder]);
 

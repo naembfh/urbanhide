@@ -4,17 +4,19 @@ import { toast } from "sonner";
 
 // Fetch all users
 export const useUsers = () =>
-  useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const { data } = await clientAxiosInstance.get("/auth/all-users");
-      console.log(data.data);
-      return data.data;
-    },
-    onError: () => {
-      toast.error("Failed to fetch users. Please try again.");
-    },
-  });
+    useQuery({
+      queryKey: ["users"],
+      queryFn: async () => {
+        try {
+          const { data } = await clientAxiosInstance.get("/auth/all-users");
+          console.log(data.data);
+          return data.data;
+        } catch (error) {
+          toast.error("Failed to fetch users. Please try again.");
+          throw error; // Ensure the error is passed back to React Query
+        }
+      },
+    });
 
 // Add user
 export const useAddUser = () => {
@@ -34,8 +36,8 @@ export const useAddUser = () => {
   });
 };
 
-// Update user
-export const useUpdateUser = () => {
+// Update user role 
+export const useUpdateRoleUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: { userId: string; role: string }) => {
@@ -69,3 +71,26 @@ export const useDeleteUser = () => {
     },
   });
 };
+
+
+// Update profile
+export const useUpdateProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: async (profileData: FormData) => {
+        const { data } = await clientAxiosInstance.patch("/auth/update-profile", profileData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        return data;
+      },
+      onSuccess: () => {
+        toast.success("Profile updated successfully.");
+        queryClient.invalidateQueries({ queryKey: ["users"] }); // Refresh user list if necessary
+      },
+      onError: () => {
+        toast.error("Failed to update profile. Please try again.");
+      },
+    });
+  };

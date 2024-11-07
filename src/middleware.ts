@@ -9,7 +9,7 @@ export const protectedRoutes = [
     "/admin",
     "/login",
     "/register",
-    "my-order"
+    
   ];
   
 
@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const user = await getCurrentUser();
-  console.log(user)
+  console.log(user,'here')
 
   if (!user) {
     if (AuthRoutes.includes(pathname)) {
@@ -50,5 +50,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/admin", "/admin/:page*",  "/login", "/register", "/my-order"],
+  matcher: ["/admin", "/admin/:page*",  "/login", "/register", "/profile",  "/profile/:page*", "/my-order"],
 };
